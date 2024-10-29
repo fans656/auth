@@ -1,0 +1,7 @@
+2024-10-29 22:15:44
+init frontend (in root dir):
+
+    npm create vite@latest frontend -- --template react
+    cd frontend
+    npm install
+    npm run dev
