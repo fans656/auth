@@ -11,3 +11,11 @@ Includes:
 Start frontend dev server:
 
     ./scripts/serve-front.sh
+
+Build frontend assets:
+
+    ./scripts/build-front.sh
+
+Start backend dev server:
+
+    ./scripts/serve-backend.sh

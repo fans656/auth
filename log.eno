@@ -1,3 +1,7 @@
+{todos}
+
+---
+
 2024-10-29 22:15:44
 init frontend (in root dir):
 
@@ -5,3 +9,7 @@ init frontend (in root dir):
     cd frontend
     npm install
     npm run dev
+
+2024-10-29 22:29:33
+{todo}
+- . serve frontend from backend
