@@ -62,7 +62,11 @@ function Profile({user}) {
     <div>
       <h3>Profile</h3>
       <p>User: {user.username}</p>
-      <Button>Log out</Button>
+      <Button
+        onClick={user.logout}
+      >
+        Log out
+      </Button>
     </div>
   );
 }
@@ -114,14 +118,19 @@ function useUser() {
       set_data({username: undefined, refreshed: true});
     }
   }, []);
+  
+  const logout = useCallback(() => {
+    Cookies.remove('token');
+    refresh();
+  }, [refresh]);
 
   useEffect(() => {
     refresh();
   }, []);
 
   const user = useMemo(() => {
-    return {...data, refresh};
-  }, [data, refresh]);
+    return {...data, refresh, logout};
+  }, [data, refresh, logout]);
   
   return user;
 }
