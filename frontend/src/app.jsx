@@ -56,6 +56,9 @@ function Login() {
           case 200:
             message.success('Login success');
             break;
+          case 400:
+            message.error((await res.json()).detail);
+            break;
           case 422:
             message.error('Invalid input');
             break;
