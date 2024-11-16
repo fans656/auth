@@ -1,13 +1,14 @@
-import { useState } from 'react'
-
-import { Routed, Layout, Form, message } from 'fansjs/ui';
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
+import Cookies from 'js-cookie';
+import * as jose from 'jose';
+import { Routed, Layout, Form, Button, message } from 'fansjs/ui';
 
 import { api } from 'src/api';
 
 const pages = [
   {
     path: '/',
-    comp: <Page><Login/></Page>,
+    comp: <Page><Home/></Page>,
   },
   {
     path: '*',
@@ -15,9 +16,14 @@ const pages = [
   },
 ];
 
+const UserContext = React.createContext();
+
 export default function App() {
+  const user = useUser();
   return (
-    <Routed>{pages}</Routed>
+    <UserContext.Provider value={user}>
+      {user.refreshed ? <Routed>{pages}</Routed> : null}
+    </UserContext.Provider>
   );
 }
 
@@ -36,9 +42,28 @@ function Page({children}) {
   );
 }
 
+function Home() {
+  const user = React.useContext(UserContext);
+  if (user.username) {
+    return <Profile user={user}/>;
+  } else {
+    return <Login/>;
+  }
+}
+
 function NotFound() {
   return (
     <p>Oops! Not found</p>
+  );
+}
+
+function Profile({user}) {
+  return (
+    <div>
+      <h3>Profile</h3>
+      <p>User: {user.username}</p>
+      <Button>Log out</Button>
+    </div>
   );
 }
 
@@ -70,4 +95,33 @@ function Login() {
       style={{width: '30em', marginTop: '5em', marginRight: '10em'}}
     />
   );
+}
+
+function useUser() {
+  const [data, set_data] = useState();
+  
+  const refresh = useCallback(() => {
+    const token = Cookies.get('token');
+    if (token) {
+      try {
+        const data = jose.decodeJwt(token);
+        set_data({username: data.user, refreshed: true});
+      } catch (e) {
+        console.error('user.refresh exception', e);
+        set_data({username: undefined, refreshed: true});
+      }
+    } else {
+      set_data({username: undefined, refreshed: true});
+    }
+  }, []);
+
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  const user = useMemo(() => {
+    return {...data, refresh};
+  }, [data, refresh]);
+  
+  return user;
 }
