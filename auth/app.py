@@ -1,11 +1,19 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from auth import cons
+from auth.env import env
 
 
 app = FastAPI()
+
+
+@app.on_event('startup')
+async def startup():
+    env.setup(os.environ.get('workdir') or cons.root_dir / 'data')
 
 
 @app.get('/')

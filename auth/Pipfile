@@ -7,9 +7,10 @@ name = "pypi"
 fastapi = "*"
 click = "*"
 uvicorn = "*"
-fans = "*"
 pytz = "*"
 pydantic = "*"
+pyyaml = "*"
+fans = "*"
 
 [dev-packages]
 
