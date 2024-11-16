@@ -57,13 +57,14 @@ async def api_login(req: LoginReq, response: Response):
 
 
 @app.get('/api/users')
-async def api_users(user: deps.Admin):
-    # TODO: pagination
+async def api_users(user: deps.Admin, paginated: deps.Paginated):
     query = env.get_users()
     return {
         'users': [{
             'username': d.username,
             'meta': json.loads(d.meta),
             'extra': json.loads(d.extra),
-        } for d in query]
+            'ctime': d.ctime,
+        } for d in paginated(query)],
+        'n_users': query.count(),
     }

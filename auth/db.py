@@ -41,7 +41,7 @@ def get_user(username: str):
 
 
 def get_users():
-    return User.select()
+    return User.select().order_by(User.ctime)
 
 
 def init_database(database_path: Path):

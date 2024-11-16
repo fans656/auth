@@ -33,3 +33,16 @@ def is_admin_user(user: User):
 
 
 Admin = Annotated[_User, Depends(is_admin_user)]
+
+
+def paginated(offset: int = 0, limit: int = 0):
+    def func(query):
+        if offset:
+            query = query.offset(offset)
+        if limit:
+            query = query.limit(limit)
+        return query
+    return func
+
+
+Paginated = Annotated[callable, Depends(paginated)]
