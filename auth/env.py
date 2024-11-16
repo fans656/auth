@@ -5,8 +5,7 @@ from pathlib import Path
 import yaml
 from fans.path import make_paths
 
-from auth.db import init_database
-from auth.dao import dao
+from auth import db
 from auth.user import User
 
 
@@ -33,7 +32,7 @@ class Env:
             'initial_admin_username': 'admin',
             'initial_admin_password': lambda: uuid.uuid4().hex,
         })
-        self.database = init_database(self.paths.database)
+        self.database = db.init_database(self.paths.database)
 
         self.ensure_admin_user()
         self.ensure_users()
@@ -51,7 +50,7 @@ class Env:
             self.public_key = f.read()
 
     def ensure_admin_user(self):
-        dao.ensure_user(
+        db.ensure_user(
             username=self.conf['initial_admin_username'],
             password=self.conf['initial_admin_password'],
             meta={'admin': True},
@@ -59,7 +58,7 @@ class Env:
 
     def ensure_users(self):
         for user in self.conf.get('initial_users', []):
-            dao.ensure_user(
+            db.ensure_user(
                 username=user['username'],
                 password=user['password'],
                 meta=user.get('meta', {}),
@@ -67,13 +66,13 @@ class Env:
             )
 
     def get_user(self, username: str):
-        model = dao.get_user(username)
+        model = db.get_user(username)
         if not model:
             return None
         return User(model, private_key=self.private_key)
 
     def get_users(self):
-        return dao.get_users()
+        return db.get_users()
 
 
 env = Env()
