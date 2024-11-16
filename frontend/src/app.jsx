@@ -47,7 +47,7 @@ function Home() {
   if (user.username) {
     return <Profile user={user}/>;
   } else {
-    return <Login/>;
+    return <Login user={user}/>;
   }
 }
 
@@ -71,7 +71,7 @@ function Profile({user}) {
   );
 }
 
-function Login() {
+function Login({user}) {
   return (
     <Form
       fields={[
@@ -84,6 +84,7 @@ function Login() {
         switch (res.status) {
           case 200:
             message.success('Login success');
+            user.refresh();
             break;
           case 400:
             message.error((await res.json()).detail);
