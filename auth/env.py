@@ -1,3 +1,4 @@
+import os
 import uuid
 from pathlib import Path
 
@@ -11,6 +12,8 @@ from auth.dao import dao
 paths = make_paths([
     'conf.yaml', {'conf'},
     'data.sqlite', {'database'},
+    'sign-key', {'sign_key_private'},
+    'sign-key.pub', {'sign_key_public'},
 ])
 
 
@@ -32,8 +35,18 @@ class Env:
         self.database = init_database(self.paths.database)
 
         self.ensure_admin_user()
+        self.ensure_keys()
 
         self.setup_done = True
+
+    def ensure_keys(self):
+        if not self.paths.sign_key_private.exists():
+            os.system(f'ssh-keygen -t rsa -b 2048 -N "" -m PEM '
+                      f'-f {self.paths.sign_key_private} > /dev/null')
+        with self.paths.sign_key_private.open() as f:
+            self.private_key = f.read()
+        with self.paths.sign_key_public.open() as f:
+            self.public_key = f.read()
 
     def ensure_admin_user(self):
         dao.ensure_user(
