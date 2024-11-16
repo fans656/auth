@@ -1,9 +1,12 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import Cookies from 'js-cookie';
 import * as jose from 'jose';
-import { Routed, Layout, Form, Button, message } from 'fansjs/ui';
+import { Routed, Layout } from 'fansjs/ui';
 
 import { api } from 'src/api';
+import { UserContext } from 'src/contexts';
+import { Home } from 'src/home';
+import { Users } from 'src/users';
 
 const pages = [
   {
@@ -11,12 +14,14 @@ const pages = [
     comp: <Page><Home/></Page>,
   },
   {
+    path: '/users',
+    comp: <Page><Users/></Page>,
+  },
+  {
     path: '*',
     comp: <Page><NotFound/></Page>,
   },
 ];
-
-const UserContext = React.createContext();
 
 export default function App() {
   const user = useUser();
@@ -33,6 +38,7 @@ function Page({children}) {
       <Layout.Header
         links={[
           {label: 'Home', path: '/'},
+          {label: 'Users', path: '/users'},
         ]}
       />
       <Layout.Content center>
@@ -42,63 +48,9 @@ function Page({children}) {
   );
 }
 
-function Home() {
-  const user = React.useContext(UserContext);
-  if (user.username) {
-    return <Profile user={user}/>;
-  } else {
-    return <Login user={user}/>;
-  }
-}
-
 function NotFound() {
   return (
     <p>Oops! Not found</p>
-  );
-}
-
-function Profile({user}) {
-  return (
-    <div>
-      <h3>Profile</h3>
-      <p>User: {user.username}</p>
-      <Button
-        onClick={user.logout}
-      >
-        Log out
-      </Button>
-    </div>
-  );
-}
-
-function Login({user}) {
-  return (
-    <Form
-      fields={[
-        {name: 'username', label: 'Username', type: 'input'},
-        {name: 'password', label: 'Password', type: 'password'},
-        {name: 'login', label: 'Login', type: 'submit'},
-      ]}
-      submit={async ({username, password}) => {
-        const res = await api.post('/api/login', {username, password}, {res: 'raw'});
-        switch (res.status) {
-          case 200:
-            message.success('Login success');
-            user.refresh();
-            break;
-          case 400:
-            message.error((await res.json()).detail);
-            break;
-          case 422:
-            message.error('Invalid input');
-            break;
-          default:
-            message.error('Unknown error');
-            break;
-        }
-      }}
-      style={{width: '30em', marginTop: '5em', marginRight: '10em'}}
-    />
   );
 }
 
