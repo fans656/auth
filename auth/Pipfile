@@ -12,6 +12,7 @@ pydantic = "*"
 pyyaml = "*"
 fans = "*"
 peewee = "*"
+pyjwt = "*"
 
 [dev-packages]
 

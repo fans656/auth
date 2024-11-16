@@ -7,6 +7,7 @@ from fans.path import make_paths
 
 from auth.db import init_database
 from auth.dao import dao
+from auth.user import User
 
 
 paths = make_paths([
@@ -53,6 +54,12 @@ class Env:
             username=self.conf['initial_admin_username'],
             password=self.conf['initial_admin_password'],
         )
+
+    def get_user(self, username: str):
+        model = dao.get_user(username)
+        if not model:
+            return None
+        return User(model, private_key=self.private_key)
 
 
 env = Env()

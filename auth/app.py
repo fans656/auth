@@ -1,13 +1,12 @@
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from auth import cons
 from auth import errors
 from auth.env import env
-from auth.dao import dao
 
 
 app = FastAPI()
@@ -40,9 +39,16 @@ class LoginReq(BaseModel):
 
 
 @app.post('/api/login')
-async def api_login(req: LoginReq):
-    user = dao.get_user(req.username)
+async def api_login(req: LoginReq, response: Response):
+    user = env.get_user(req.username)
     if not user:
         raise errors.WrongUsernameOrPassword()
     if not user.verify_password(req.password):
         raise errors.WrongUsernameOrPassword()
+    access_token = user.generate_access_token()
+    response.set_cookie(
+        key='token',
+        value=access_token.raw.decode(),
+        max_age=access_token.expire_seconds,
+    )
+    return {'token': access_token.raw}
