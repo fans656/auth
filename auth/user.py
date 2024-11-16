@@ -23,7 +23,7 @@ class User:
     @property
     def access_token(self) -> str:
         token = self.generate_access_token()
-        return token.raw.decode()
+        return token.raw
 
     def generate_access_token(self):
         return AccessToken(
@@ -53,7 +53,7 @@ class AccessToken:
 
         now = datetime.datetime.utcnow()
         self.data.update({
-            'sub': int(now.timestamp()),
+            'sub': str(int(now.timestamp())),
             'exp': int((now + datetime.timedelta(days=expire_days)).timestamp()),
         })
 

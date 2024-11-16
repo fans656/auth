@@ -12,8 +12,8 @@ pydantic = "*"
 pyyaml = "*"
 fans = "*"
 peewee = "*"
-pyjwt = "*"
 cryptography = "*"
+pyjwt = {extras = ["crypto"], version = "*"}
 
 [dev-packages]
 

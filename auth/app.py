@@ -50,7 +50,7 @@ async def api_login(req: LoginReq, response: Response):
     token = user.generate_access_token()
     response.set_cookie(
         key='token',
-        value=token.raw.decode(),
+        value=token.raw,
         max_age=token.expire_seconds,
     )
     return {'token': token.raw}

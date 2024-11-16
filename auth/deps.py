@@ -16,6 +16,8 @@ def get_current_user(req: Request):
             data = jwt.decode(token, env.public_key, algorithms=['RS256'])
             return env.get_user(data['user'])
         except Exception:
+            import traceback
+            traceback.print_exc()
             return None
     else:
         return None
