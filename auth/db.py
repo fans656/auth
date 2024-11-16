@@ -8,7 +8,8 @@ class User(peewee.Model):
     username = peewee.TextField(primary_key=True)
     hashed_password = peewee.TextField()
     salt = peewee.TextField()
-    meta = peewee.TextField(null=True)
+    meta = peewee.TextField()
+    extra = peewee.TextField()
 
 
 tables = [

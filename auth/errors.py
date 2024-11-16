@@ -10,4 +10,4 @@ class HTTPError(HTTPException):
 class WrongUsernameOrPassword(HTTPError):
 
     status_code = 400
-    message = 'wrong username or password'
+    message = 'Wrong username or password'

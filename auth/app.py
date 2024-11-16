@@ -1,10 +1,12 @@
 import os
+import json
 
 from fastapi import FastAPI, Response
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from auth import cons
+from auth import deps
 from auth import errors
 from auth.env import env
 
@@ -48,7 +50,20 @@ async def api_login(req: LoginReq, response: Response):
     token = user.generate_access_token()
     response.set_cookie(
         key='token',
-        value=token.raw,
+        value=token.raw.decode(),
         max_age=token.expire_seconds,
     )
     return {'token': token.raw}
+
+
+@app.get('/api/users')
+async def api_users(user: deps.Admin):
+    # TODO: pagination
+    query = env.get_users()
+    return {
+        'users': [{
+            'username': d.username,
+            'meta': json.loads(d.meta),
+            'extra': json.loads(d.extra),
+        } for d in query]
+    }

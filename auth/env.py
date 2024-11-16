@@ -36,6 +36,7 @@ class Env:
         self.database = init_database(self.paths.database)
 
         self.ensure_admin_user()
+        self.ensure_users()
         self.ensure_keys()
 
         self.setup_done = True
@@ -53,13 +54,26 @@ class Env:
         dao.ensure_user(
             username=self.conf['initial_admin_username'],
             password=self.conf['initial_admin_password'],
+            meta={'admin': True},
         )
+
+    def ensure_users(self):
+        for user in self.conf.get('initial_users', []):
+            dao.ensure_user(
+                username=user['username'],
+                password=user['password'],
+                meta=user.get('meta', {}),
+                extra=user.get('extra', {}),
+            )
 
     def get_user(self, username: str):
         model = dao.get_user(username)
         if not model:
             return None
         return User(model, private_key=self.private_key)
+
+    def get_users(self):
+        return dao.get_users()
 
 
 env = Env()
