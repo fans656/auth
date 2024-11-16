@@ -41,14 +41,14 @@ class LoginReq(BaseModel):
 @app.post('/api/login')
 async def api_login(req: LoginReq, response: Response):
     user = env.get_user(req.username)
-    if not user:
+
+    if not user or not user.verify_password(req.password):
         raise errors.WrongUsernameOrPassword()
-    if not user.verify_password(req.password):
-        raise errors.WrongUsernameOrPassword()
-    access_token = user.generate_access_token()
+
+    token = user.generate_access_token()
     response.set_cookie(
         key='token',
-        value=access_token.raw.decode(),
-        max_age=access_token.expire_seconds,
+        value=token.raw,
+        max_age=token.expire_seconds,
     )
-    return {'token': access_token.raw}
+    return {'token': token.raw}
