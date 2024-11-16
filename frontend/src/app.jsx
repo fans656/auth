@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
-import { Routed, Layout, Form } from 'fansjs/ui';
+import { Routed, Layout, Form, message } from 'fansjs/ui';
+
+import { api } from 'src/api';
 
 const pages = [
   {
@@ -48,8 +50,19 @@ function Login() {
         {name: 'password', label: 'Password', type: 'password'},
         {name: 'login', label: 'Login', type: 'submit'},
       ]}
-      submit={async (values) => {
-        console.log('submit', values);
+      submit={async ({username, password}) => {
+        const res = await api.post('/api/login', {username, password}, {res: 'raw'});
+        switch (res.status) {
+          case 200:
+            message.success('Login success');
+            break;
+          case 422:
+            message.error('Invalid input');
+            break;
+          default:
+            message.error('Unknown error');
+            break;
+        }
       }}
       style={{width: '30em', marginTop: '5em', marginRight: '10em'}}
     />
