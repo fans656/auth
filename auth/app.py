@@ -5,7 +5,9 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from auth import cons
+from auth import errors
 from auth.env import env
+from auth.dao import dao
 
 
 app = FastAPI()
@@ -39,4 +41,8 @@ class LoginReq(BaseModel):
 
 @app.post('/api/login')
 async def api_login(req: LoginReq):
-    pass
+    user = dao.get_user(req.username)
+    if not user:
+        raise errors.WrongUsernameOrPassword()
+    if not user.verify_password(req.password):
+        raise errors.WrongUsernameOrPassword()
