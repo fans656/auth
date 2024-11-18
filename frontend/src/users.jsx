@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import moment from 'moment';
-import { Table, Button } from 'fansjs/ui';
+import { Table, Button, Action } from 'fansjs/ui';
 
 import { api } from 'src/api';
 
@@ -12,36 +12,42 @@ export function Users() {
         data={users}
         cols={userCols}
       />
-      <Button
-        onClick={() => {
-          console.log('create user');
-        }}
-      >
-        Create
-      </Button>
+      <Action action={{
+        name: 'Create',
+        type: 'edit',
+        done: user => {
+          console.log('create user', user);
+        }
+      }} data={() => ({username: '<username>', meta: {}, extra: {}})}/>
     </div>
   );
 }
 
 const userCols = [
-  {label: 'Username', name: 'username'},
-  {label: 'Admin', render: d => d.meta.admin ? 'Yes' : null},
-  {label: 'Meta', render: d => JSON.stringify(d.meta)},
-  {label: 'Extra', render: d => JSON.stringify(d.extra)},
-  {label: 'Created', render: d => moment(d.ctime * 1000).format('YYYY-MM-DD hh:mm:ss')},
-  {label: 'Action', render: () => {
-    return (
-      <div className="horz xs-margin">
-        <a
-          onClick={() => {
-          }}
-        >
-          Edit
-        </a>
-        <a>
-          Delete
-        </a>
-      </div>
-    );
-  }},
+  {name: 'username'},
+  {name: 'admin', render: d => d.meta.admin ? 'Yes' : null},
+  {name: 'meta', render: d => JSON.stringify(d.meta)},
+  {name: 'extra', render: d => JSON.stringify(d.extra)},
+  {name: 'created', render: d => moment(d.ctime * 1000).format('YYYY-MM-DD hh:mm:ss')},
+  {name: 'actions', actions: [
+    {
+      name: 'edit',
+      type: 'edit',
+      done: user => {
+        console.log('edited user', user);
+      },
+    },
+    {
+      name: 'more',
+      actions: [
+        {
+          name: 'delete',
+          danger: true,
+          done: (user) => {
+            console.log('delete user', user);
+          },
+        },
+      ],
+    },
+  ]},
 ];
