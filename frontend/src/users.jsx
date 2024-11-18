@@ -5,14 +5,7 @@ import { Table, Button } from 'fansjs/ui';
 import { api } from 'src/api';
 
 export function Users() {
-  // TODO: api.useGet
-  const [users, set_users] = useState([]);
-  useEffect(() => {
-    (async () => {
-      const res = await api.get('/api/users');
-      set_users(res.users);
-    })();
-  }, []);
+  const {users} = api.useGet('/api/users') || {};
   return (
     <div className="vert margin">
       <Table
