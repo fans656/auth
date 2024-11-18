@@ -1,23 +1,54 @@
 import React, { useEffect, useState } from 'react'
+import moment from 'moment';
+import { Table, Button } from 'fansjs/ui';
 
 import { api } from 'src/api';
 
 export function Users() {
   // TODO: api.useGet
-  const [users, set_users] = useState();
+  const [users, set_users] = useState([]);
   useEffect(() => {
     (async () => {
       const res = await api.get('/api/users');
       set_users(res.users);
     })();
   }, []);
-  return users ? (
-    <div>
-      {users.map(d => (
-        <div key={d.username}>
-          {JSON.stringify(d)}
-        </div>
-      ))}
+  return (
+    <div className="vert margin">
+      <Table
+        data={users}
+        cols={userCols}
+      />
+      <Button
+        onClick={() => {
+          console.log('create user');
+        }}
+      >
+        Create
+      </Button>
     </div>
-  ) : null;
+  );
 }
+
+const userCols = [
+  {label: 'Username', name: 'username'},
+  {label: 'Admin', render: d => d.meta.admin ? 'Yes' : null},
+  {label: 'Meta', render: d => JSON.stringify(d.meta)},
+  {label: 'Extra', render: d => JSON.stringify(d.extra)},
+  {label: 'Created', render: d => moment(d.ctime * 1000).format('YYYY-MM-DD hh:mm:ss')},
+  {label: 'Action', render: () => {
+    return (
+      <div className="horz xs-margin">
+        <a
+          onClick={() => {
+          }}
+        >
+          Edit
+        </a>
+        <a>
+          Delete
+        </a>
+      </div>
+    );
+  }},
+];
