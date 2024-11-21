@@ -3,7 +3,6 @@ from typing import Annotated
 import jwt
 from fastapi import Depends, Request, HTTPException
 
-from auth import errors
 from auth.env import env
 from auth.user import User as _User
 

@@ -12,6 +12,7 @@ class User:
         self.model = model
         self.private_key = private_key
 
+        self.username = self.model.username
         self.meta = json.loads(self.model.meta)
         self.extra = json.loads(self.model.extra)
 

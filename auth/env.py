@@ -50,7 +50,7 @@ class Env:
             self.public_key = f.read()
 
     def ensure_admin_user(self):
-        db.ensure_user(
+        db.create_user(
             username=self.conf['initial_admin_username'],
             password=self.conf['initial_admin_password'],
             meta={'admin': True},
@@ -58,7 +58,7 @@ class Env:
 
     def ensure_users(self):
         for user in self.conf.get('initial_users', []):
-            db.ensure_user(
+            db.create_user(
                 username=user['username'],
                 password=user['password'],
                 meta=user.get('meta', {}),
@@ -73,6 +73,16 @@ class Env:
 
     def get_users(self):
         return db.get_users()
+
+    def create_user(self, *args, **kwargs):
+        return db.create_user(*args, **kwargs)
+
+    def edit_user(self, username: str, meta: dict, extra: dict):
+        model = db.get_user(username)
+        db.update_user_attr(username, meta, extra)
+
+    def delete_user(self, username: str):
+        return db.delete_user(username)
 
 
 env = Env()

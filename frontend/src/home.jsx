@@ -15,7 +15,7 @@ export function Home() {
 
 function Profile({user}) {
   return (
-    <div>
+    <div className="vert margin">
       <h3>Profile</h3>
       <p>User: {user.username}</p>
       <Button
@@ -50,6 +50,7 @@ function Login({user}) {
             break;
           default:
             message.error('Unknown error');
+            console.log(res);
             break;
         }
       }}

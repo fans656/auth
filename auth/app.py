@@ -1,13 +1,12 @@
 import os
 import json
 
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from auth import cons
 from auth import deps
-from auth import errors
 from auth.env import env
 
 
@@ -45,7 +44,7 @@ async def api_login(req: LoginReq, response: Response):
     user = env.get_user(req.username)
 
     if not user or not user.verify_password(req.password):
-        raise errors.WrongUsernameOrPassword()
+        raise HTTPException(400, 'Wrong username or password')
 
     token = user.generate_access_token()
     response.set_cookie(
@@ -68,3 +67,47 @@ async def api_users(user: deps.Admin, paginated: deps.Paginated):
         } for d in paginated(query)],
         'n_users': query.count(),
     }
+
+
+class CreateUserReq(BaseModel):
+
+    username: str = Field(..., max_length=100)
+    password: str = Field(..., max_length=100)
+    meta: dict = {}
+    extra: dict = {}
+
+
+@app.post('/api/create-user')
+async def api_create_user(req: CreateUserReq, user: deps.Admin):
+    env.create_user(
+        username=req.username,
+        password=req.password,
+        meta=req.meta,
+        extra=req.extra,
+    )
+
+
+class DeleteUserReq(BaseModel):
+
+    username: str
+
+
+@app.post('/api/delete-user')
+async def api_delete_user(req: DeleteUserReq, user: deps.Admin):
+    if req.username == user.username:
+        raise HTTPException(400, 'Cannot delete self')
+    env.delete_user(req.username)
+
+
+class EditUserReq(BaseModel):
+
+    username: str
+    meta: dict
+    extra: dict
+
+
+@app.post('/api/edit-user')
+async def api_edit_user(req: EditUserReq, user: deps.Admin):
+    if req.username == user.username and not (req.meta or {}).get('admin'):
+        raise HTTPException(400, 'Cannot remove admin role of self')
+    env.edit_user(req.username, req.meta, req.extra)

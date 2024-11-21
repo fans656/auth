@@ -23,17 +23,31 @@ tables = [
 ]
 
 
-def ensure_user(username: str, password: str, meta: dict = {}, extra: dict = {}):
+def create_user(username: str, password: str, meta: dict = None, extra: dict = None):
     if not User.get_or_none(User.username == username):
         salt = uuid.uuid4().hex
         User.create(**{
             'username': username,
             'hashed_password': utils.hashed_password(password, salt),
             'salt': salt,
-            'meta': json.dumps(meta),
-            'extra': json.dumps(extra),
+            'meta': json.dumps(meta or {}),
+            'extra': json.dumps(extra or {}),
             'ctime': int(time.time()),
         })
+        return User.get_or_none(User.username == username)
+
+
+def delete_user(username: str):
+    User.delete().where(User.username == username).execute()
+
+
+def update_user_attr(username: str, meta: dict, extra: dict):
+    assert isinstance(meta, dict)
+    assert isinstance(extra, dict)
+    User.update(
+        meta=json.dumps(meta),
+        extra=json.dumps(extra),
+    ).where(User.username == username).execute()
 
 
 def get_user(username: str):
