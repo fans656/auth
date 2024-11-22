@@ -137,9 +137,13 @@ async def api_edit_user(req: EditUserReq, user: deps.Admin):
 
 class ChangePasswordReq(BaseModel):
 
-    password: str
+    old_password: str
+    new_password: str
 
 
 @app.post('/api/change-password')
 async def api_change_password(req: ChangePasswordReq, user: deps.User):
-    env.change_password(user.username, req.password)
+    if not user.verify_password(req.old_password):
+        raise HTTPException(400)
+
+    env.change_password(user.username, req.new_password)

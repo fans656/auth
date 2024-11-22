@@ -56,12 +56,12 @@ class Test_login:
                 cookie_token = part.split('=')[1]
         assert max_age
         data = jwt.decode(cookie_token, algorithms=['RS256'], options={"verify_signature": False})
-        assert data['user'] == 'admin'
+        assert data['username'] == 'admin'
 
         # verify body token
         token = res.json()['token']
         data = jwt.decode(token, algorithms=['RS256'], options={"verify_signature": False})
-        assert data['user'] == 'admin'
+        assert data['username'] == 'admin'
 
     def test_admin_wrong_username(self, client):
         res = client.post('/api/login', json={
@@ -209,6 +209,12 @@ class Test_change_password(LoginRequired):
     method = 'post'
     endpoint = '/api/change-password'
 
+    def test_verify_old_password(self, guest_client):
+        assert guest_client.post('/api/change-password', json={
+            'old_password': 'foo',
+            'new_password': 'bar',
+        }).status_code == 400
+
     def test_200(self, guest_client, client):
         # verify old password can login
         assert client.post('/api/login', json={
@@ -218,7 +224,8 @@ class Test_change_password(LoginRequired):
 
         # change password
         assert guest_client.post('/api/change-password', json={
-            'password': '123',
+            'old_password': 'guest',
+            'new_password': '123',
         }).status_code == 200
 
         # verify new password can login
