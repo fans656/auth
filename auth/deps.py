@@ -12,7 +12,7 @@ def dep_User(req: Request):
 
     try:
         data = jwt.decode(token, env.public_key, algorithms=['RS256'])
-        return env.get_user(data['user'])
+        return env.get_user(data['username'])
     except Exception:
         raise HTTPException(401)
 
