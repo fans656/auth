@@ -1,6 +1,7 @@
 import os
 import uuid
 from pathlib import Path
+from typing import Optional
 
 import yaml
 from fans.path import make_paths
@@ -22,8 +23,8 @@ class Env:
     def __init__(self):
         self.setup_done = False
 
-    def setup(self, workdir):
-        if self.setup_done:
+    def setup(self, workdir, force=False):
+        if not force and self.setup_done:
             return
 
         self.paths = paths.with_root(workdir).create()
@@ -65,7 +66,7 @@ class Env:
                 extra=user.get('extra', {}),
             )
 
-    def get_user(self, username: str):
+    def get_user(self, username: str) -> Optional[User]:
         model = db.get_user(username)
         if not model:
             return None

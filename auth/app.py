@@ -1,3 +1,8 @@
+"""
+TODO:
+- register new user
+    * consider handle of resource consumption attack, i.e. some one register a lot accounts
+"""
 import os
 import json
 
@@ -69,16 +74,31 @@ async def api_users(user: deps.Admin, paginated: deps.Paginated):
     }
 
 
+@app.get('/api/user')
+async def api_user(username: str, user: deps.Admin):
+    user = env.get_user(username)
+    if not user:
+        raise HTTPException(404, f'user "{username}" not found')
+    return {
+        'username': user.username,
+        'meta': user.meta,
+        'extra': user.extra,
+    }
+
+
 class CreateUserReq(BaseModel):
 
-    username: str = Field(..., max_length=100)
-    password: str = Field(..., max_length=100)
+    username: str
+    password: str
     meta: dict = {}
     extra: dict = {}
 
 
 @app.post('/api/create-user')
 async def api_create_user(req: CreateUserReq, user: deps.Admin):
+    if env.get_user(req.username):
+        raise HTTPException(409)
+
     env.create_user(
         username=req.username,
         password=req.password,
@@ -96,6 +116,7 @@ class DeleteUserReq(BaseModel):
 async def api_delete_user(req: DeleteUserReq, user: deps.Admin):
     if req.username == user.username:
         raise HTTPException(400, 'Cannot delete self')
+
     env.delete_user(req.username)
 
 
@@ -110,4 +131,5 @@ class EditUserReq(BaseModel):
 async def api_edit_user(req: EditUserReq, user: deps.Admin):
     if req.username == user.username and not (req.meta or {}).get('admin'):
         raise HTTPException(400, 'Cannot remove admin role of self')
+
     env.edit_user(req.username, req.meta, req.extra)
