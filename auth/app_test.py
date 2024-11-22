@@ -13,13 +13,25 @@ def client(tmp_path):
     conf_path = Path(tmp_path) / 'conf.yaml'
     conf_path.ensure_conf({
         'initial_users': [
-            {'username': 'foo', 'password': 'foo'},
+            {'username': 'guest', 'password': 'guest'},
         ],
     })
 
     env.setup(tmp_path)
     with TestClient(app) as client:
         yield client
+
+
+@pytest.fixture
+def guest_client(client):
+    client.cookies.set('token', env.get_user('guest').access_token)
+    yield client
+
+
+@pytest.fixture
+def admin_client(client):
+    client.cookies.set('token', env.get_user('admin').access_token)
+    yield client
 
 
 class TestLogin:
@@ -70,10 +82,8 @@ class Test_users:
     def test_401(self, client):
         assert client.get('/api/users').status_code == 401
 
-    def test_403(self, client):
-        client.cookies.set('token', env.get_user('foo').access_token)
-        assert client.get('/api/users').status_code == 403
+    def test_403(self, guest_client):
+        assert guest_client.get('/api/users').status_code == 403
 
-    def test_200(self, client):
-        client.cookies.set('token', env.get_user('admin').access_token)
-        assert client.get('/api/users').status_code == 200
+    def test_200(self, admin_client):
+        assert admin_client.get('/api/users').status_code == 200
