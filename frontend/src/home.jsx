@@ -6,16 +6,18 @@ import { api } from 'src/api';
 export function Home() {
   const user = Auth.useUser();
   if (user.username) {
-    return <Page/>;
+    return (
+      <div>
+        <h3>Profile</h3>
+        <Auth.Profile/>
+      </div>
+    );
   } else {
-    return <Auth.Login style={{paddingTop: '2em'}}/>;
+    return (
+      <div>
+        <h3>Login</h3>
+        <Auth.Login/>
+      </div>
+    );
   }
-}
-
-function Page() {
-  return (
-    <div className="flex-1">
-      home
-    </div>
-  );
 }

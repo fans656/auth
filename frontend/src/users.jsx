@@ -73,12 +73,6 @@ function useUserColumns({req}) {
           name: 'more',
           actions: [
             {
-              name: 'change password',
-              done: (user) => {
-                console.log('change password', user);
-              },
-            },
-            {
               name: 'delete user',
               danger: true,
               done: async (user) => {
