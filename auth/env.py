@@ -85,5 +85,8 @@ class Env:
     def delete_user(self, username: str):
         return db.delete_user(username)
 
+    def change_password(self, username: str, new_password: str):
+        return db.change_password(username, new_password)
+
 
 env = Env()

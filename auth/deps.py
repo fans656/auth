@@ -7,25 +7,20 @@ from auth.env import env
 from auth.user import User as _User
 
 
-def get_current_user(req: Request):
+def dep_User(req: Request):
     token = req.cookies.get('token')
 
-    if token:
-        try:
-            data = jwt.decode(token, env.public_key, algorithms=['RS256'])
-            return env.get_user(data['user'])
-        except Exception:
-            import traceback
-            traceback.print_exc()
-            return None
-    else:
-        return None
+    try:
+        data = jwt.decode(token, env.public_key, algorithms=['RS256'])
+        return env.get_user(data['user'])
+    except Exception:
+        raise HTTPException(401)
 
 
-User = Annotated[_User, Depends(get_current_user)]
+User = Annotated[_User, Depends(dep_User)]
 
 
-def is_admin_user(user: User):
+def dep_Admin(user: User):
     if not user:
         raise HTTPException(401, 'Login required')
     if not (user and user.is_admin()):
@@ -33,10 +28,10 @@ def is_admin_user(user: User):
     return user
 
 
-Admin = Annotated[_User, Depends(is_admin_user)]
+Admin = Annotated[_User, Depends(dep_Admin)]
 
 
-def paginated(offset: int = 0, limit: int = 0):
+def dep_Paginated(offset: int = 0, limit: int = 0):
     def func(query):
         if offset:
             query = query.offset(offset)
@@ -46,4 +41,4 @@ def paginated(offset: int = 0, limit: int = 0):
     return func
 
 
-Paginated = Annotated[callable, Depends(paginated)]
+Paginated = Annotated[callable, Depends(dep_Paginated)]

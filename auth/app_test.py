@@ -35,7 +35,7 @@ def admin_client(client):
     yield client
 
 
-class TestLogin:
+class Test_login:
 
     def test_admin(self, client):
         res = client.post('/api/login', json={
@@ -193,3 +193,42 @@ class Test_edit_user(AdminOnly):
 
         data = admin_client.get('/api/user', params={'username': 'guest'}).json()
         assert data['extra']['foo'] == 3
+
+
+class LoginRequired:
+
+    method = 'get'
+    endpoint = None
+
+    def test_401(self, client):
+        assert getattr(client, self.method)(self.endpoint).status_code == 401
+
+
+class Test_change_password(LoginRequired):
+
+    method = 'post'
+    endpoint = '/api/change-password'
+
+    def test_200(self, guest_client, client):
+        # verify old password can login
+        assert client.post('/api/login', json={
+            'username': 'guest',
+            'password': 'guest',
+        }).status_code == 200
+
+        # change password
+        assert guest_client.post('/api/change-password', json={
+            'password': '123',
+        }).status_code == 200
+
+        # verify new password can login
+        assert client.post('/api/login', json={
+            'username': 'guest',
+            'password': '123',
+        }).status_code == 200
+
+        # verify old password cannot login
+        assert client.post('/api/login', json={
+            'username': 'guest',
+            'password': 'guest',
+        }).status_code == 400

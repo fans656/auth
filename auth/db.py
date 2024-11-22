@@ -25,10 +25,10 @@ tables = [
 
 def create_user(username: str, password: str, meta: dict = None, extra: dict = None):
     if not User.get_or_none(User.username == username):
-        salt = uuid.uuid4().hex
+        hashed_password, salt = make_password(password)
         User.create(**{
             'username': username,
-            'hashed_password': utils.hashed_password(password, salt),
+            'hashed_password': hashed_password,
             'salt': salt,
             'meta': json.dumps(meta or {}),
             'extra': json.dumps(extra or {}),
@@ -50,12 +50,25 @@ def update_user_attr(username: str, meta: dict, extra: dict):
     ).where(User.username == username).execute()
 
 
+def change_password(username: str, new_password: str):
+    hashed_password, salt = make_password(new_password)
+    User.update(
+        hashed_password=hashed_password,
+        salt=salt,
+    ).where(User.username == username).execute()
+
+
 def get_user(username: str):
     return User.get_or_none(User.username == username)
 
 
 def get_users():
     return User.select().order_by(User.ctime)
+
+
+def make_password(password):
+    salt = uuid.uuid4().hex
+    return utils.hashed_password(password, salt), salt
 
 
 def init_database(database_path: Path):

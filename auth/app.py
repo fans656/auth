@@ -133,3 +133,13 @@ async def api_edit_user(req: EditUserReq, user: deps.Admin):
         raise HTTPException(400, 'Cannot remove admin role of self')
 
     env.edit_user(req.username, req.meta, req.extra)
+
+
+class ChangePasswordReq(BaseModel):
+
+    password: str
+
+
+@app.post('/api/change-password')
+async def api_change_password(req: ChangePasswordReq, user: deps.User):
+    env.change_password(user.username, req.password)
