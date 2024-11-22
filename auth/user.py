@@ -27,12 +27,10 @@ class User:
         return token.raw
 
     def generate_access_token(self):
-        return AccessToken(
-            {
-                'user': self.model.username,
-            },
-            private_key=self.private_key,
-        )
+        return AccessToken({
+            'username': self.username,
+            'admin': self.is_admin(),
+        }, private_key=self.private_key)
 
     def is_admin(self) -> bool:
         return self.meta.get('admin') == True

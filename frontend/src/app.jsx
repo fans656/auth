@@ -36,7 +36,7 @@ function Page({children}) {
       <Layout.Header
         links={[
           {label: 'Home', path: '/'},
-          {label: 'Users', path: '/users'},
+          {label: 'Users', path: '/users', admin: true},
         ]}
         auth={true}
       />
