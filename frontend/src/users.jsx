@@ -5,19 +5,19 @@ import { Table, Button, Action, message } from 'fansjs/ui';
 import { api } from 'src/api';
 
 export function Users() {
-  const {res, controller} = api.useGetController('/api/users');
-  const userCols = useUserCols({controller});
+  const [res, req] = api.useGet('/api/users', {controller: true});
+  const userColumns = useUserColumns({req});
   return (
     <div className="vert margin">
       <Table
         data={res && res.users}
-        cols={userCols}
+        cols={userColumns}
       />
       <Action
         action={{
           name: 'Create',
           type: 'edit',
-          done: (user) => doCreateUser(user, {controller}),
+          done: (user) => doCreateUser(user, {req}),
         }}
         data={makeCreateUserTemplate}
       />
@@ -25,14 +25,14 @@ export function Users() {
   );
 }
 
-async function doCreateUser(user, {controller}) {
-  await api.post('/api/create-user', {
+async function doCreateUser(user, {req}) {
+  await api.post('/api/create-user', {data: {
     username: user.username,
     password: user.password,
     meta: user.meta,
     extra: user.extra,
-  });
-  controller.refresh();
+  }});
+  req.refresh();
 }
 
 function makeCreateUserTemplate() {
@@ -44,7 +44,7 @@ function makeCreateUserTemplate() {
   };
 }
 
-function useUserCols({controller}) {
+function useUserColumns({req}) {
   return useMemo(() => {
     return [
       {name: 'username'},
@@ -60,13 +60,13 @@ function useUserCols({controller}) {
             return {meta: user.meta, extra: user.extra};
           },
           done: async (edited, user) => {
-            await api.post('/api/edit-user', {
+            await api.post('/api/edit-user', {data: {
               username: user.username,
               extra: edited.extra,
               meta: edited.meta,
-            });
+            }});
             message.success('Edited');
-            controller.refresh();
+            req.refresh();
           },
         },
         {
@@ -82,14 +82,14 @@ function useUserCols({controller}) {
               name: 'delete user',
               danger: true,
               done: async (user) => {
-                await api.post('/api/delete-user', {username: user.username});
+                await api.post('/api/delete-user', {data: {username: user.username}});
                 message.success('Deleted');
-                controller.refresh();
+                req.refresh();
               },
             },
           ],
         },
       ]},
     ];
-  }, [controller]);
+  }, [req]);
 }
