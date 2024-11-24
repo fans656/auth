@@ -27,6 +27,7 @@ class Env:
         if not force and self.setup_done:
             return
 
+        self.workdir = Path(workdir).absolute()
         self.paths = paths.with_root(workdir).create()
 
         self.conf = self.paths.conf.ensure_conf({

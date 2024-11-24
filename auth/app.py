@@ -9,18 +9,20 @@ import json
 from fastapi import FastAPI, Response, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
+from fans.logger import get_logger
 
 from auth import cons
 from auth import deps
 from auth.env import env
 
 
+logger = get_logger(__name__)
 app = FastAPI()
 
 
 @app.on_event('startup')
 async def startup():
-    env.setup(os.environ.get('workdir') or cons.root_dir / 'data')
+    logger.info(f'workdir: {env.workdir}')
 
 
 class LoginReq(BaseModel):

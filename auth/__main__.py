@@ -2,6 +2,8 @@ import click
 import uvicorn
 from fans.ports import ports
 
+from auth import cons
+from auth.env import env
 from auth.app import app
 
 
@@ -11,7 +13,9 @@ def cli():
 
 
 @cli.command()
-def serve():
+@click.option('-d', '--data', default=None)
+def serve(data):
+    env.setup(data or cons.root_dir / 'data')
     uvicorn.run(app, host='0.0.0.0', port=ports.auth)
 
 
