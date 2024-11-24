@@ -10,10 +10,10 @@ uvicorn = "*"
 pytz = "*"
 pydantic = "*"
 pyyaml = "*"
-fans = "*"
 peewee = "*"
 cryptography = "*"
 pyjwt = {extras = ["crypto"], version = "*"}
+fans = "*"
 
 [dev-packages]
 

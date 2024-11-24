@@ -23,21 +23,6 @@ async def startup():
     env.setup(os.environ.get('workdir') or cons.root_dir / 'data')
 
 
-@app.get('/')
-async def index():
-    return FileResponse(cons.root_dir / 'frontend/dist/index.html')
-
-
-@app.get('/favicon.ico')
-async def favicon():
-    return FileResponse(cons.root_dir / 'frontend/dist/favicon.ico')
-
-
-@app.get('/assets/{path:path}')
-async def assets(path):
-    return FileResponse(cons.root_dir / 'frontend/dist/assets' / path)
-
-
 class LoginReq(BaseModel):
 
     username: str = Field(..., max_length=100)
@@ -147,3 +132,18 @@ async def api_change_password(req: ChangePasswordReq, user: deps.User):
         raise HTTPException(400)
 
     env.change_password(user.username, req.new_password)
+
+
+@app.get('/favicon.ico')
+async def favicon():
+    return FileResponse(cons.root_dir / 'frontend/dist/favicon.ico')
+
+
+@app.get('/assets/{path:path}')
+async def assets(path):
+    return FileResponse(cons.root_dir / 'frontend/dist/assets' / path)
+
+
+@app.get('/{path:path}')
+async def index():
+    return FileResponse(cons.root_dir / 'frontend/dist/index.html')

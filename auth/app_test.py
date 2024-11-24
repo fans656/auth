@@ -239,3 +239,10 @@ class Test_change_password(LoginRequired):
             'username': 'guest',
             'password': 'guest',
         }).status_code == 400
+
+
+class Test_frontend:
+
+    def test_index(self, client):
+        assert client.get('/').status_code == 200
+        assert client.get('/users').status_code == 200
