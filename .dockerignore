@@ -1,2 +1,3 @@
-/frontend/node_modules
+/web/node_modules
 /data
+/.pytest_cache

@@ -12,6 +12,6 @@ RUN pipenv install
 WORKDIR /app
 
 COPY ./auth /app/auth
-COPY ./frontend/dist /app/frontend/dist
+COPY ./web/dist /app/web/dist
 
 CMD PIPENV_PIPFILE="/app/auth/auth/Pipfile" pipenv run python -m auth serve

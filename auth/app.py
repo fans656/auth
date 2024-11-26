@@ -138,14 +138,14 @@ async def api_change_password(req: ChangePasswordReq, user: deps.User):
 
 @app.get('/favicon.ico')
 async def favicon():
-    return FileResponse(cons.root_dir / 'frontend/dist/favicon.ico')
+    return FileResponse(cons.root_dir / 'web/dist/favicon.ico')
 
 
 @app.get('/assets/{path:path}')
 async def assets(path):
-    return FileResponse(cons.root_dir / 'frontend/dist/assets' / path)
+    return FileResponse(cons.root_dir / 'web/dist/assets' / path)
 
 
 @app.get('/{path:path}')
 async def index():
-    return FileResponse(cons.root_dir / 'frontend/dist/index.html')
+    return FileResponse(cons.root_dir / 'web/dist/index.html')

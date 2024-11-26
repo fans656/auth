@@ -1,0 +1,21 @@
+build:
+  - name: web
+    exec: npm run build
+    cwd: web
+  - name: image
+    exec: docker buildx build {build_args} -f dev/Dockerfile -t fans656/auth .
+    args:
+      build_args: 
+        value: --build-arg http_proxy=\"$HTTP_PROXY\" --build-arg https_proxy=\"$HTTPS_PROXY\"
+        eval: true
+test:
+  - name: back
+    exec: PIPENV_PIPFILE="auth/Pipfile" pipenv run pytest auth {args}
+    args: true
+serve:
+  - name: back
+    exec: PIPENV_PIPFILE="auth/Pipfile" pipenv run python -m auth serve {args}
+    args: true
+  - name: web
+    exec: npm run dev
+    cwd: web
