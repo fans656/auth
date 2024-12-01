@@ -38,7 +38,7 @@ function Page({children}) {
           {label: 'Home', path: '/'},
           {label: 'Users', path: '/users', admin: true},
         ]}
-        auth={true}
+        auth="/"
       />
       <Layout.Content center>
         {children}

@@ -71,6 +71,13 @@ test.describe('login', () => {
       await verifyError(page, 'Invalid input');
     });
   });
+
+  test('click login in header can show login form', async ({page}) => {
+    await inte.verify(page, '/users', async () => {
+      await page.click('#goto-login');
+      await verifyLoginForm(page);
+    });
+  });
 });
 
 async function clickLogin(page) {
