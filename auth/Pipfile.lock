@@ -165,12 +165,12 @@
         },
         "fans": {
             "hashes": [
-                "sha256:2945bfd66f7afe889cab013275311d649b849d74d925063ae5ece3a1e532c900",
-                "sha256:6cc65c87865b695e5e34d733cff0ce13445637dfdd22b5c6c08af74a0e5181aa"
+                "sha256:d6dda8df09b14510e3c05770facefe38b7d0edd4cc52a85458ba5197c8b31dc1",
+                "sha256:e877889271528fd143f7f788ad68f5f1544cd26e95d81769bc63b9ceb118b386"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.6'",
-            "version": "==0.0.35"
+            "version": "==0.0.36"
         },
         "fastapi": {
             "hashes": [

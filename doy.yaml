@@ -16,9 +16,15 @@ test:
     cmd: npx playwright test --config=playwright.config.js
     cwd: inte
     with:
-      - name: auth-server
+      - name: auth-server-web
         cmd: npm run dev
         cwd: web
+      - name: prepare-data
+        cmd: rm -rf tmp && mkdir tmp && cp inte/sample-data/* tmp/
+        cwd: .
+      - name: auth-server-back
+        cmd: PIPENV_PIPFILE="auth/Pipfile" pipenv run python -m auth serve -d tmp
+        cwd: .
       #- name: resource-server
       #  cmd: npm run dev
       #  cwd: inte/sample-resource-server

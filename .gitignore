@@ -1,4 +1,5 @@
 /data
+/tmp
 /.pytest_cache
 node_modules
 test-results
