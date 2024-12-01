@@ -1,0 +1,16 @@
+{
+  "name": "inte",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "inte": "playwright test --config=playwright.config.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@playwright/test": "^1.49.0",
+    "fansjs": "^0.0.9"
+  }
+}

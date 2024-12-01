@@ -1,21 +1,31 @@
 build:
   - name: web
-    exec: npm run build
+    cmd: npm run build
     cwd: web
   - name: image
-    exec: docker buildx build {build_args} -f dev/Dockerfile -t fans656/auth .
+    cmd: docker buildx build {build_args} -f dev/Dockerfile -t fans656/auth .
     args:
       build_args: 
         value: --build-arg http_proxy=\"$HTTP_PROXY\" --build-arg https_proxy=\"$HTTPS_PROXY\"
         eval: true
 test:
   - name: back
-    exec: PIPENV_PIPFILE="auth/Pipfile" pipenv run pytest auth {args}
+    cmd: PIPENV_PIPFILE="auth/Pipfile" pipenv run pytest auth {args}
     args: true
+  - name: inte
+    cmd: npx playwright test --config=playwright.config.js
+    cwd: inte
+    with:
+      - name: auth-server
+        cmd: npm run dev
+        cwd: web
+      #- name: resource-server
+      #  cmd: npm run dev
+      #  cwd: inte/sample-resource-server
 serve:
   - name: back
-    exec: PIPENV_PIPFILE="auth/Pipfile" pipenv run python -m auth serve {args}
+    cmd: PIPENV_PIPFILE="auth/Pipfile" pipenv run python -m auth serve {args}
     args: true
   - name: web
-    exec: npm run dev
+    cmd: npm run dev
     cwd: web
