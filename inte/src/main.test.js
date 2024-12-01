@@ -11,15 +11,17 @@ const inte = new Intetest({
 });
 
 test.describe('login', () => {
-  test('can show login form', async ({page}) => {
-    await verifyLoginForm(page);
+  test('visit home page shows login form by default', async ({page}) => {
+    await inte.verify(page, '/', async () => {
+      await verifyLoginForm(page);
+    });
   });
 
   test('admin login & logout', async ({page}) => {
     await inte.verify(page, '/', async () => {
       // NOTE: the "admin" password is setup in inte/sample-data
       await fillUsernameAndPassword(page, 'admin', 'admin');
-      await page.click('*[id="login"]');
+      await clickLogin(page);
       await verifySuccess(page, 'Logged in', 'admin');
       await verifyLogout(page);
     });
@@ -28,6 +30,44 @@ test.describe('login', () => {
   test('invalid input (empty username & password)', async ({page}) => {
     await inte.verify(page, '/', async () => {
       await clickLogin(page);
+      await verifyError(page, 'Invalid input');
+    });
+  });
+
+  test('invalid input (username too long)', async ({page}) => {
+    await inte.verify(page, '/', async () => {
+      await fillUsernameAndPassword(page, 'a'.repeat(101), 'password');
+      await clickLogin(page);
+      await verifyError(page, 'Invalid input');
+    });
+  });
+
+  test('invalid input (password too long)', async ({page}) => {
+    await inte.verify(page, '/', async () => {
+      await fillUsernameAndPassword(page, 'username', 'a'.repeat(101));
+      await clickLogin(page);
+      await verifyError(page, 'Invalid input');
+    });
+  });
+
+  test('wrong username or password', async ({page}) => {
+    await inte.verify(page, '/', async () => {
+      await fillUsernameAndPassword(page, 'asdf', 'asdf');
+      await clickLogin(page);
+      await verifyError(page, 'Wrong username or password');
+    });
+  });
+
+  test('enter in username input triggers login', async ({page}) => {
+    await inte.verify(page, '/', async () => {
+      await page.press('input[id="username"]', 'Enter');
+      await verifyError(page, 'Invalid input');
+    });
+  });
+
+  test('enter in password input triggers login', async ({page}) => {
+    await inte.verify(page, '/', async () => {
+      await page.press('input[id="password"]', 'Enter');
       await verifyError(page, 'Invalid input');
     });
   });
