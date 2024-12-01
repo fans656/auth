@@ -15,7 +15,7 @@ export default defineConfig({
     port: ports.auth_web,
     proxy: {
       '/api': {
-        target: `http://127.0.0.1:${ports.auth}`
+        target: `http://127.0.0.1:${ports.auth_back}`
       },
     },
   },

@@ -16,7 +16,7 @@ def cli():
 @click.option('-d', '--data', default=None)
 def serve(data):
     env.setup(data or cons.root_dir / 'data')
-    uvicorn.run(app, host='0.0.0.0', port=ports.auth)
+    uvicorn.run(app, host='0.0.0.0', port=ports.auth_back)
 
 
 if __name__ == '__main__':
