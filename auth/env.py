@@ -1,5 +1,7 @@
 import os
+import time
 import uuid
+import threading
 from pathlib import Path
 from typing import Optional
 
@@ -40,6 +42,8 @@ class Env:
         self.ensure_users()
         self.ensure_keys()
 
+        self.prepare_grant_pool()
+
         self.setup_done = True
 
     def ensure_keys(self):
@@ -67,6 +71,10 @@ class Env:
                 extra=user.get('extra', {}),
             )
 
+    def prepare_grant_pool(self):
+        self.grants_lock = threading.Lock()
+        self.grants = {}
+
     def get_user(self, username: str) -> Optional[User]:
         model = db.get_user(username)
         if not model:
@@ -88,6 +96,27 @@ class Env:
 
     def change_password(self, username: str, new_password: str):
         return db.change_password(username, new_password)
+
+    def make_grant(self, token):
+        grant = uuid.uuid4().hex
+        with self.grants_lock:
+            now = time.time()
+
+            # clean expired grants
+            expired_keys = [k for k, v in self.grants.items() if now - v['time'] >= 60]
+            for key in expired_keys:
+                del self.grants[key]
+
+            self.grants[grant] = {'token': token, 'time': now}
+
+        return grant
+
+    def use_grant(self, grant: str) -> Optional[str]:
+        with self.grants_lock:
+            if grant in self.grants:
+                data = self.grants.pop(grant)
+                return data['token']
+        return None
 
 
 env = Env()

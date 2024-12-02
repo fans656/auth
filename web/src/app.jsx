@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import Cookies from 'js-cookie';
 import * as jose from 'jose';
+import qs from 'qs';
 import { Routed, Layout, Auth } from 'fansjs/ui';
 
 import { api } from 'src/api';
@@ -15,6 +16,10 @@ const pages = [
   {
     path: '/users',
     comp: <Page><Users/></Page>,
+  },
+  {
+    path: '/login',
+    comp: <Login/>,
   },
   {
     path: '*',
@@ -50,5 +55,43 @@ function Page({children}) {
 function NotFound() {
   return (
     <p>Oops! Not found</p>
+  );
+}
+
+function Login() {
+  const query = Routed.useQuery();
+  let redirect_uri;
+  try {
+    redirect_uri = new URL(query.redirect_uri);
+  } catch (exc) {
+    return (
+      <div>
+        Invalid redirect URI: {query.redirect_uri}
+      </div>
+    );
+  }
+  const name = redirect_uri.host;
+  return (
+    <Layout.Content center>
+      <div className="vert margin">
+        <h3>Login to <a href={redirect_uri.origin} target="_blank">{name}</a></h3>
+        <Auth.Login
+          req={{
+            response_type: 'grant',
+            // redirect_uri: redirect_uri.href,
+          }}
+          done={async ({res}) => {
+            const data = await res.json();
+            const params = qs.stringify({
+              ...qs.parse(redirect_uri.search.substring(1)),
+              'grant': data.grant,
+              'auth_server': window.location.origin,
+            });
+            const url = `${redirect_uri.origin}${redirect_uri.pathname}?${params}`;
+            window.location.href = url;
+          }}
+        />
+      </div>
+    </Layout.Content>
   );
 }

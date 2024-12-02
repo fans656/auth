@@ -35,3 +35,6 @@ serve:
   - name: web
     cmd: npm run dev
     cwd: web
+  - name: resback
+    cmd: PIPENV_PIPFILE="back/Pipfile" pipenv run python -m back.app
+    cwd: inte/sample-resource-server

@@ -7,13 +7,14 @@ import os
 import json
 
 from fastapi import FastAPI, Response, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from fans.logger import get_logger
 
 from auth import cons
 from auth import deps
 from auth.env import env
+from auth.utils import add_query_param
 
 
 logger = get_logger(__name__)
@@ -29,6 +30,8 @@ class LoginReq(BaseModel):
 
     username: str = Field(..., max_length=100)
     password: str = Field(..., max_length=100)
+    response_type: str = Field(default='code')
+    redirect_uri: str = Field(default='')
 
 
 @app.post('/api/login')
@@ -39,12 +42,41 @@ async def api_login(req: LoginReq, response: Response):
         raise HTTPException(400, 'Wrong username or password')
 
     token = user.generate_access_token()
-    response.set_cookie(
-        key='token',
-        value=token.raw,
-        max_age=token.expire_seconds,
-    )
-    return {'token': token.raw}
+
+    match req.response_type:
+        case 'code':
+            response.set_cookie(
+                key='token',
+                value=token.raw,
+                max_age=token.expire_seconds,
+            )
+            return {'token': token.raw}
+        case 'grant':
+            grant = env.make_grant(token)
+            if req.redirect_uri:
+                return RedirectResponse(url=add_query_param(req.redirect_uri, 'grant', grant))
+            else:
+                return {'grant': grant}
+        case _:
+            raise HTTPException(400, f'invalid response_type "{req.response_type}"')
+
+
+class TokenReq(BaseModel):
+
+    grant_type: str = Field(default='authorization_code')
+    code: str = Field()
+
+
+@app.post('/api/token')
+async def api_token(req: TokenReq):
+    match req.grant_type:
+        case 'authorization_code':
+            token = env.use_grant(req.code)
+            if not token:
+                raise HTTPException(400, f'invalid code')
+            return {'token': token.raw}
+        case _:
+            raise HTTPException(400, f'invalid grant_type "{req.grant_type}"')
 
 
 @app.get('/api/users')

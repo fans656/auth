@@ -61,3 +61,9 @@ class AccessToken:
     @property
     def expire_seconds(self) -> int:
         return self.expire_days * 24 * 3600
+
+    def as_dict(self):
+        return {
+            'token': self.raw,
+            'expire_seconds': self.expire_seconds,
+        }
