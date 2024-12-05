@@ -3,6 +3,14 @@ import { test, expect } from '@playwright/test';
 import { ports } from 'fansjs';
 import { Intetest } from 'fansjs/testutil';
 
+import {
+  verifyLoginForm,
+  fillUsernameAndPassword,
+  clickLogin,
+  verifySuccess,
+  verifyError,
+} from './utils';
+
 test.describe.configure({mode: 'parallel'});
 
 const inte = new Intetest({
@@ -13,7 +21,7 @@ const inte = new Intetest({
 test.describe('login', () => {
   test('visit home page shows login form by default', async ({page}) => {
     await inte.verify(page, '/', async () => {
-      await verifyLoginForm(page);
+      await verifyLoginForm(inte, page);
     });
   });
 
@@ -22,7 +30,7 @@ test.describe('login', () => {
       // NOTE: the "admin" password is setup in inte/sample-data
       await fillUsernameAndPassword(page, 'admin', 'admin');
       await clickLogin(page);
-      await verifySuccess(page, 'Logged in', 'admin');
+      await verifySuccess(inte, page, 'Logged in', 'admin');
       await verifyLogout(page);
     });
   });
@@ -75,55 +83,15 @@ test.describe('login', () => {
   test('click login in header can show login form', async ({page}) => {
     await inte.verify(page, '/users', async () => {
       await page.click('#goto-login');
-      await verifyLoginForm(page);
+      await verifyLoginForm(inte, page);
     });
   });
 });
-
-async function clickLogin(page) {
-  await page.click('*[id="login"]');
-}
-
-async function fillUsernameAndPassword(page, username, password) {
-  if (username) {
-    await page.fill('input[id="username"]', username);
-  }
-  if (password) {
-    await page.fill('input[id="password"]', password);
-  }
-}
-
-async function verifySuccess(page, text, username) {
-  // login success message
-  await verifyAntMessage(page, '.ant-message-success', text);
-  
-  // username in page
-  await inte.verify(page, '.username', {text: username});
-}
-
-async function verifyError(page, text) {
-  await verifyAntMessage(page, '.ant-message-error', text);
-}
-
-async function verifyAntMessage(page, selector, text) {
-  const error = page.locator(selector);
-  await error.waitFor();
-  expect(await error.textContent()).toBe(text);
-  await error.waitFor({state: 'hidden'});
-}
   
 async function verifyLogout(page) {
   // click logout
   await page.click('*[id="logout"]');
   
   // login form show again
-  await verifyLoginForm(page);
-}
-
-async function verifyLoginForm(page) {
-  await inte.verify(page, '/', async ({elem}) => {
-    await elem('#username', {'type': 'input'});
-    await elem('#password', {'type': 'input'});
-    await elem('#login', {'type': 'button'});
-  });
+  await verifyLoginForm(inte, page);
 }

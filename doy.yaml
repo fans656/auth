@@ -13,21 +13,25 @@ test:
     cmd: PIPENV_PIPFILE="auth/Pipfile" pipenv run pytest auth {args}
     args: true
   - name: inte
-    cmd: npx playwright test --config=playwright.config.js
+    cmd: npx playwright test --config=playwright.config.js {args}
+    args: true
     cwd: inte
     with:
-      - name: auth-server-web
-        cmd: npm run dev
-        cwd: web
       - name: prepare-data
         cmd: rm -rf tmp && mkdir tmp && cp inte/sample-data/* tmp/
         cwd: .
+      - name: auth-server-web
+        cmd: npm run dev
+        cwd: web
+      - name: res-server-web
+        cmd: npm run dev
+        cwd: inte/sample-resource-server/web
       - name: auth-server-back
         cmd: PIPENV_PIPFILE="auth/Pipfile" pipenv run python -m auth serve -d tmp
         cwd: .
-      #- name: resource-server
-      #  cmd: npm run dev
-      #  cwd: inte/sample-resource-server
+      - name: res-server-back
+        cmd: PIPENV_PIPFILE="back/Pipfile" pipenv run python -m back.app
+        cwd: inte/sample-resource-server
 serve:
   - name: back
     cmd: PIPENV_PIPFILE="auth/Pipfile" pipenv run python -m auth serve {args}
@@ -35,6 +39,9 @@ serve:
   - name: web
     cmd: npm run dev
     cwd: web
+  - name: resweb
+    cmd: npm run dev
+    cwd: inte/sample-resource-server/web
   - name: resback
     cmd: PIPENV_PIPFILE="back/Pipfile" pipenv run python -m back.app
     cwd: inte/sample-resource-server

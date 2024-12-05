@@ -17,6 +17,7 @@ def auth(fastapi_app):
         res = requests.post(url, json=json)
 
         if res.status_code != 200:
+            print(res.status_code, res.text)
             raise HTTPException(400, 'Failed to get token')
 
         token = res.json()['token']
