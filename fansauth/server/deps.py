@@ -3,8 +3,8 @@ from typing import Annotated
 import jwt
 from fastapi import Depends, Request, HTTPException
 
-from auth.env import env
-from auth.user import User as _User
+from fansauth.server.env import env
+from fansauth.server.user import User as _User
 
 
 def dep_User(req: Request):

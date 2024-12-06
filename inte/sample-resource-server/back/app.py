@@ -1,6 +1,5 @@
-# from fans.auth import auth
-from .auth import auth
-from fastapi import FastAPI
+from fansauth import auth
+from fastapi import FastAPI, APIRouter
 
 
 app = FastAPI()

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import peewee
 
-from auth import utils
+from fansauth.server import utils
 
 
 class User(peewee.Model):

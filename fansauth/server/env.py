@@ -8,8 +8,8 @@ from typing import Optional
 import yaml
 from fans.path import make_paths
 
-from auth import db
-from auth.user import User
+from fansauth.server import db
+from fansauth.server.user import User
 
 
 paths = make_paths([

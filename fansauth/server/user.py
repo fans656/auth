@@ -3,7 +3,7 @@ import datetime
 
 import jwt
 
-from auth import utils
+from fansauth.server import utils
 
 
 class User:

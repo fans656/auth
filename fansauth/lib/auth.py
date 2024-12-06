@@ -1,9 +1,9 @@
 import requests
+from fastapi import HTTPException, Response
+from fastapi import Depends, Request, HTTPException
 
 
 def auth(fastapi_app):
-
-    from fastapi import HTTPException, Response
 
     @fastapi_app.post('/api/grant')
     def api_grant(req: dict, response: Response):
@@ -30,3 +30,7 @@ def auth(fastapi_app):
         return {'token': token}
 
     return fastapi_app
+
+
+# auth.User = deps.User
+# auth.Admin = deps.Admin

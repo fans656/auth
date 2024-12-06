@@ -1,3 +1,13 @@
+common:
+  web: &web
+    cmd: npm run dev
+    cwd: web
+  resweb: &resweb
+    cmd: npm run dev
+    cwd: inte/sample-resource-server/web
+  resback: &resback
+    cmd: PYTHONPATH="/home/fans656/fansauth" PIPENV_PIPFILE="back/Pipfile" pipenv run python -m back.app
+    cwd: inte/sample-resource-server
 build:
   - name: web
     cmd: npm run build
@@ -10,7 +20,7 @@ build:
         eval: true
 test:
   - name: back
-    cmd: PIPENV_PIPFILE="auth/Pipfile" pipenv run pytest auth {args}
+    cmd: PIPENV_PIPFILE="fansauth/Pipfile" pipenv run pytest fansauth {args}
     args: true
   - name: inte
     cmd: npx playwright test --config=playwright.config.js {args}
@@ -20,28 +30,22 @@ test:
       - name: prepare-data
         cmd: rm -rf tmp && mkdir tmp && cp inte/sample-data/* tmp/
         cwd: .
-      - name: auth-server-web
-        cmd: npm run dev
-        cwd: web
-      - name: res-server-web
-        cmd: npm run dev
-        cwd: inte/sample-resource-server/web
-      - name: auth-server-back
-        cmd: PIPENV_PIPFILE="auth/Pipfile" pipenv run python -m auth serve -d tmp
+      - name: web
+        <<: *web
+      - name: back
+        cmd: PIPENV_PIPFILE="fansauth/Pipfile" pipenv run python -m fansauth serve -d tmp
         cwd: .
-      - name: res-server-back
-        cmd: PIPENV_PIPFILE="back/Pipfile" pipenv run python -m back.app
-        cwd: inte/sample-resource-server
+      - name: resweb
+        <<: *resweb
+      - name: resback
+        <<: *resback
 serve:
-  - name: back
-    cmd: PIPENV_PIPFILE="auth/Pipfile" pipenv run python -m auth serve {args}
-    args: true
   - name: web
-    cmd: npm run dev
-    cwd: web
+    <<: *web
+  - name: back
+    cmd: PIPENV_PIPFILE="fansauth/Pipfile" pipenv run python -m fansauth serve {args}
+    args: true
   - name: resweb
-    cmd: npm run dev
-    cwd: inte/sample-resource-server/web
+    <<: *resweb
   - name: resback
-    cmd: PIPENV_PIPFILE="back/Pipfile" pipenv run python -m back.app
-    cwd: inte/sample-resource-server
+    <<: *resback

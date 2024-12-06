@@ -11,10 +11,10 @@ from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from fans.logger import get_logger
 
-from auth import cons
-from auth import deps
-from auth.env import env
-from auth.utils import add_query_param
+from fansauth import cons
+from fansauth.server import deps
+from fansauth.server.env import env
+from fansauth.server.utils import add_query_param
 
 
 logger = get_logger(__name__)

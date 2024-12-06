@@ -14,6 +14,7 @@ peewee = "*"
 cryptography = "*"
 pyjwt = {extras = ["crypto"], version = "*"}
 fans = "*"
+requests = "*"
 
 [dev-packages]
 

@@ -2,9 +2,9 @@ import click
 import uvicorn
 from fans.ports import ports
 
-from auth import cons
-from auth.env import env
-from auth.app import app
+from fansauth import cons
+from fansauth.server.env import env
+from fansauth.server.app import app
 
 
 @click.group()

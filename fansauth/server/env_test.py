@@ -1,7 +1,7 @@
 import yaml
 from fans.path import Path
 
-from auth.env import Env, paths
+from fansauth.server.env import Env, paths
 
 
 class Test_conf_admin:

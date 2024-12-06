@@ -4,13 +4,12 @@ from starlette.testclient import TestClient
 
 from fans.path import Path
 
-from auth.env import env
-from auth.app import app
+from fansauth.server.env import env
+from fansauth.server.app import app
 
 
 @pytest.fixture
 def client(tmp_path):
-    print('tmp_path', tmp_path)
     conf_path = Path(tmp_path) / 'conf.yaml'
     conf_path.ensure_conf({
         'initial_users': [
