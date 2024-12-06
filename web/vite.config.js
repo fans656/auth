@@ -3,8 +3,6 @@ import react from '@vitejs/plugin-react'
 import path from 'path';
 import { ports } from 'fansjs';
 
-console.log(ports);
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],

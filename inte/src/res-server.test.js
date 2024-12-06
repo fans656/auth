@@ -1,45 +1,20 @@
-import * as playwright from '@playwright/test';
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { ports } from 'fansjs';
-import { Intetest } from 'fansjs/testutil';
+import inte from '@fans656/inte';
 
-import {
-  verifyLoginForm,
-  fillUsernameAndPassword,
-  clickLogin,
-  verifySuccess,
-  verifyError,
-} from './utils';
+import { login } from './common';
 
-test.describe.configure({mode: 'parallel'});
-
-const inte = new Intetest({
-  playwright,
-  origin: `http://localhost:${ports.auth_res_web}`,
-});
+inte.setup({origin: `http://localhost:${ports.auth_res_web}`, expect, test});
 
 test.describe('res-server-login', () => {
-  test('simple', async ({page}) => {
-    // page = await inte(page, '/');
-    // await page.click('#goto-login', async (newPage) => {
-    //   await newPage.waitForLoadState();
-    //   await verifyLoginForm(inte, newPage);
-    //   await fillUsernameAndPassword(newPage, 'admin', 'admin');
-    //   await clickLogin(newPage);
-    //   await verifySuccess(inte, newPage, 'Logged in', 'admin');
-    // });
+  test('redirection login works', async ({page}) => {
+    await inte(page, '/');
 
-    await inte.verify(page, '/', async () => {
-      page.context().on('page', async (page) => {
-        await page.waitForLoadState();
-        await verifyLoginForm(inte, page);
-        await fillUsernameAndPassword(page, 'admin', 'admin');
-        await clickLogin(page);
-        await verifySuccess(inte, page, 'Logged in', 'admin');
-      });
+    await inte.click('#goto-login', {follow: true});
 
-      await page.click('#goto-login');
-      await page.waitForTimeout(5000);
-    });
+    await login.verifyUI(inte);
+    await login.fill(inte, 'admin', 'admin');
+    await login.login(inte);
+    await login.success(inte, 'admin');
   });
 });

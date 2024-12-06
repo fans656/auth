@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fans656/inte": "file:../../@fans656/inte",
     "@playwright/test": "^1.49.0",
-    "fansjs": "^0.0.9"
+    "fansjs": "file:../../fansjs"
   }
 }

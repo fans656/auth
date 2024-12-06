@@ -1,13 +1,9 @@
-import { useEffect } from 'react';
-
 import { ports } from 'fansjs';
 import { App, Auth } from 'fansjs/ui';
 
 export default function() {
   return (
-    <App
-      auth={`http://localhost:${ports.auth_web}/login`}
-    >
+    <App auth={`http://localhost:${ports.auth_web}/login`}>
       {[
         {name: 'home', comp: <Home/>, path: '/'},
       ]}
