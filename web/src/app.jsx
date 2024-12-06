@@ -7,6 +7,7 @@ import { Routed, Layout, Auth } from 'fansjs/ui';
 import { api } from 'src/api';
 import { Home } from 'src/home';
 import { Users } from 'src/users';
+import { Help } from 'src/help';
 
 const pages = [
   {
@@ -16,6 +17,10 @@ const pages = [
   {
     path: '/users',
     comp: <Page><Users/></Page>,
+  },
+  {
+    path: '/help',
+    comp: <Page><Help/></Page>,
   },
   {
     path: '/login',
@@ -42,6 +47,7 @@ function Page({children}) {
         links={[
           {label: 'Home', path: '/'},
           {label: 'Users', path: '/users', admin: true},
+          {label: 'Help', path: '/help'},
         ]}
         auth="/"
       />
