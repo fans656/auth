@@ -18,7 +18,7 @@ function Home() {
   const user = Auth.useUser();
   return user.valid ? (
     <div>
-      Welcome!
+      Welcome ${user.username} (is admin: ${user.admin})!
     </div>
   ) : (
     <div>
@@ -27,6 +27,7 @@ function Home() {
   );
 }
 
+// for intetest
 function Query() {
   const query = Routed.useQuery();
   const endpointRef = React.useRef();
