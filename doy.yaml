@@ -4,10 +4,10 @@ common:
     cwd: web
   resweb: &resweb
     cmd: npm run dev
-    cwd: inte/sample-resource-server/web
+    cwd: samples/web
   resback: &resback
     cmd: PYTHONPATH="/home/fans656/fansauth" PIPENV_PIPFILE="back/Pipfile" pipenv run python -m back.app
-    cwd: inte/sample-resource-server
+    cwd: samples
 build:
   - name: web
     cmd: npm run build
@@ -28,7 +28,7 @@ test:
     cwd: inte
     with:
       - name: prepare-data
-        cmd: rm -rf tmp && mkdir tmp && cp inte/sample-data/* tmp/
+        cmd: rm -rf tmp && mkdir tmp && cp samples/data/* tmp/
         cwd: .
       - name: web
         <<: *web
