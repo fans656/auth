@@ -49,3 +49,7 @@ serve:
     <<: *resweb
   - name: resback
     <<: *resback
+libs:
+  fansauth:
+    type: pip
+    root: fansauth
