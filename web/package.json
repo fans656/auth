@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "fansjs": "^0.0.10",
+    "fansjs": "^0.0.12",
     "jose": "^5.9.6",
     "js-cookie": "^3.0.5",
     "moment": "^2.30.1",
