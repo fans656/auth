@@ -1,2 +1,5 @@
 initial_admin_username: admin
 initial_admin_password: admin
+initial_users:
+  - username: guest
+    password: guest

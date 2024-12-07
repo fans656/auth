@@ -9,6 +9,7 @@ uvicorn = "*"
 fans = "*"
 requests = "*"
 pyjwt = "*"
+cryptography = "*"
 
 [dev-packages]
 

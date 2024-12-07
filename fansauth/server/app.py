@@ -7,7 +7,7 @@ import os
 import json
 
 from fastapi import FastAPI, Response, HTTPException
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import PlainTextResponse, FileResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from fans.logger import get_logger
 
@@ -166,6 +166,11 @@ async def api_change_password(req: ChangePasswordReq, user: deps.User):
         raise HTTPException(400)
 
     env.change_password(user.username, req.new_password)
+
+
+@app.get('/public-key', response_class=PlainTextResponse)
+async def public_key():
+    return env.public_key
 
 
 @app.get('/favicon.ico')
