@@ -50,7 +50,7 @@ class AccessToken:
         self.data = data
         self.expire_days = expire_days
 
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.UTC)
         self.data.update({
             'sub': str(int(now.timestamp())),
             'exp': int((now + datetime.timedelta(days=expire_days)).timestamp()),

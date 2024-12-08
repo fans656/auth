@@ -9,14 +9,16 @@ pyjwt = "*"
 cryptography = "*"
 fans = "*"
 requests = "*"
+pytest = "*"
 
 [dev-packages]
-pyyaml = "*"
 peewee = "*"
 pydantic = "*"
 click = "*"
 uvicorn = "*"
 pytz = "*"
+pyyaml = "*"
+httpx = "*"
 
 [requires]
-python_version = "3.10"
+python_version = "3.13"
