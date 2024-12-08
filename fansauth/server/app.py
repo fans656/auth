@@ -5,6 +5,7 @@ TODO:
 """
 import os
 import json
+import contextlib
 
 from fastapi import FastAPI, Response, HTTPException
 from fastapi.responses import PlainTextResponse, FileResponse, RedirectResponse
@@ -17,13 +18,14 @@ from fansauth.server.env import env
 from fansauth.server.utils import add_query_param
 
 
-logger = get_logger(__name__)
-app = FastAPI()
-
-
-@app.on_event('startup')
-async def startup():
+@contextlib.asynccontextmanager
+async def lifespan(app):
     logger.info(f'workdir: {env.workdir}')
+    yield
+
+
+logger = get_logger(__name__)
+app = FastAPI(lifespan=lifespan)
 
 
 class LoginReq(BaseModel):
