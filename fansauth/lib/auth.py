@@ -113,9 +113,15 @@ def auth(
     if check:
         check_func = check
     elif admin:
-        check_func = _check_admin_login
+        if admin == 'api':
+            check_func = _check_admin_login_for_api
+        else:
+            check_func = _check_admin_login
     elif login:
-        check_func = _check_user_login
+        if login == 'api':
+            check_func = _check_user_login_for_api
+        else:
+            check_func = _check_user_login
     else:
         check_func = None
 
@@ -196,7 +202,17 @@ def _check_user_login(req):
     return user
 
 
+def _check_user_login_for_api(req):
+    if req.url.path.startswith('/api/'):
+        return _check_user_login(req)
+
+
 def _check_admin_login(req):
     user = _check_user_login(req)
     if not user.is_admin():
         raise HTTPException(403)
+
+
+def _check_admin_login_for_api(req):
+    if req.url.path.startswith('/api/'):
+        return _check_admin_login(req)
