@@ -18,7 +18,7 @@ function Home() {
   const user = Auth.useUser();
   return user.valid ? (
     <div>
-      Welcome ${user.username} (is admin: ${user.admin})!
+      Welcome {user.username}! (is admin: {user.admin ? 'Y' : 'N'})
     </div>
   ) : (
     <div>
