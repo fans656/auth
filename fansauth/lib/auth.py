@@ -36,7 +36,10 @@ class CheckMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, req, call_next):
         req.state.get_user = lambda: _get_user(req)
         try:
-            check_result = await self.check_func(req)
+            if req.url.path == '/api/grant':
+                check_result = True
+            else:
+                check_result = await self.check_func(req)
         except HTTPException as exc:
             return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
         except Exception as exc:
@@ -113,6 +116,8 @@ def auth(
         check_func = _check_admin_login
     elif login:
         check_func = _check_user_login
+    else:
+        check_func = None
 
     if check_func:
         app.add_middleware(CheckMiddleware, check_func=check_func)
