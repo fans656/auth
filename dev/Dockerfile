@@ -2,16 +2,16 @@ FROM python:3.10-bookworm
 
 RUN pip install pipenv
 
-WORKDIR /app/auth/auth
-COPY ./auth/Pipfile Pipfile
-COPY ./auth/Pipfile.lock Pipfile.lock
+COPY ./fansauth/Pipfile /app/fansauth/fansauth/Pipfile
+COPY ./fansauth/Pipfile.lock /app/fansauth/fansauth/Pipfile.lock
 
-WORKDIR /app/auth/auth
+WORKDIR /app/fansauth/fansauth
 RUN pipenv install
+RUN pipenv install --dev
 
 WORKDIR /app
 
-COPY ./auth /app/auth
+COPY ./fansauth /app/fansauth
 COPY ./web/dist /app/web/dist
 
-CMD PIPENV_PIPFILE="/app/auth/auth/Pipfile" pipenv run python -m auth serve
+CMD PIPENV_PIPFILE="/app/fansauth/fansauth/Pipfile" pipenv run python -m fansauth serve
