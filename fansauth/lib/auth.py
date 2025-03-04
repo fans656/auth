@@ -1,3 +1,12 @@
+"""
+All functionalities of the auth lib are exported from the single `auth` object.
+
+`auth` is a callable that can take a FastAPI app and add authorization to it:
+
+    auth(app)
+
+it will register an endpoint "/api/grant" on the app
+"""
 import time
 import inspect
 from typing import Annotated, Callable
