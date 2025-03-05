@@ -1,0 +1,16 @@
+[project]
+name = "fansauth"
+version = "0.1.0"
+description = "fans656's authorization helper"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "duf==0.0.3",
+    "peewee>=3.17.9",
+    "pyjwt>=2.10.1",
+]
+
+[dependency-groups]
+dev = [
+    "duf>=0.0.2",
+]
