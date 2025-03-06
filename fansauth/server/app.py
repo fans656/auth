@@ -6,6 +6,7 @@ TODO:
 import os
 import json
 import contextlib
+from typing import Optional
 
 from fastapi import FastAPI, Response, HTTPException
 from fastapi.responses import PlainTextResponse, FileResponse, RedirectResponse
@@ -34,6 +35,7 @@ class LoginReq(BaseModel):
     password: str = Field(..., max_length=100)
     response_type: str = Field(default='code')
     redirect_uri: str = Field(default='')
+    expire_seconds: Optional[int] = Field(default=0)
 
 
 @app.post('/api/login')
@@ -43,7 +45,7 @@ async def api_login(req: LoginReq, response: Response):
     if not user or not user.verify_password(req.password):
         raise HTTPException(400, 'Wrong username or password')
 
-    token = user.generate_access_token()
+    token = user.generate_access_token(expire_seconds=req.expire_seconds)
 
     match req.response_type:
         case 'code':

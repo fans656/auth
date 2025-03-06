@@ -26,11 +26,15 @@ class User:
         token = self.generate_access_token()
         return token.raw
 
-    def generate_access_token(self):
-        return AccessToken({
-            'username': self.username,
-            'admin': self.is_admin(),
-        }, private_key=self.private_key)
+    def generate_access_token(self, expire_seconds: int = 0):
+        return AccessToken(
+            {
+                'username': self.username,
+                'admin': self.is_admin(),
+            },
+            private_key=self.private_key,
+            expire_seconds=expire_seconds,
+        )
 
     def is_admin(self) -> bool:
         return self.meta.get('admin') == True
@@ -45,22 +49,17 @@ class AccessToken:
             self,
             data,
             private_key: bytes,
-            expire_days: int = 30,
+            expire_seconds: int = 0,
     ):
         self.data = data
-        self.expire_days = expire_days
+        self.expire_seconds = expire_seconds or 30 * 24 * 3600  # 30 days by default
 
         now = datetime.datetime.now(datetime.UTC)
         self.data.update({
-            'sub': str(int(now.timestamp())),
-            'exp': int((now + datetime.timedelta(days=expire_days)).timestamp()),
+            'exp': int((now + datetime.timedelta(seconds=expire_seconds)).timestamp()),
         })
 
         self.raw = jwt.encode(data, private_key, algorithm='RS256')
-
-    @property
-    def expire_seconds(self) -> int:
-        return self.expire_days * 24 * 3600
 
     def as_dict(self):
         return {
