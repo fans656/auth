@@ -13,6 +13,7 @@ from typing import Annotated, Callable
 
 import jwt
 import requests
+from fans.logger import get_logger
 from fastapi import FastAPI, APIRouter, HTTPException, Response
 from fastapi import Depends, Request, HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -20,6 +21,7 @@ from starlette.responses import JSONResponse
 
 
 _globals = {'public_key': None}
+logger = get_logger(__name__)
 
 
 class User:
@@ -110,6 +112,7 @@ def auth(
                 if res.status_code != 200:
                     raise RuntimeError(f'failed to retrieve public key from auth provider')
                 _globals['public_key'] = res.text
+                logger.info(f'public key used: {res.text}')
                 break
             except Exception:
                 if i_retry + 1 == n_retries:
@@ -190,11 +193,16 @@ auth.check = auth_check
 
 
 def _get_user(req):
-    token = req.cookies.get('token')
+    token = req.cookies.get('token') or req.headers.get('fme-token')
+    if not token:
+        logger.info('empty token')
+        return None
     try:
         data = jwt.decode(token, _globals['public_key'], algorithms=['RS256'])
         return User(data)
-    except Exception:
+    except Exception as exc:
+        logger.info(f'invalid token: {token}')
+        logger.info(f'invalid token exception: {exc}')
         return None
 
 
