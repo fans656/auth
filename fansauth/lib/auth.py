@@ -13,6 +13,7 @@ from typing import Annotated, Callable
 
 import jwt
 import requests
+from fans.path import Path
 from fans.logger import get_logger
 from fastapi import FastAPI, APIRouter, HTTPException, Response
 from fastapi import Depends, Request, HTTPException
@@ -22,6 +23,15 @@ from starlette.responses import JSONResponse
 
 _globals = {'public_key': None}
 logger = get_logger(__name__)
+
+
+# NOTE: load cached public key to ease development
+cached_public_key_path = Path.home() / '.duf/auth/public_key'
+if cached_public_key_path.exists():
+    try:
+        _globals['public_key'] = cached_public_key_path.load()
+    except Exception:
+        logger.warning(f'failed to load cached public key from {cached_public_key_path}')
 
 
 class User:
